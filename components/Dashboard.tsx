@@ -1,0 +1,614 @@
+// app/components/Dashboard.tsx
+"use client"
+import { useState, useEffect } from 'react';
+import Header from './Header';
+import ChatPanel from './ChatPanel';
+import OrganizationsPanel from './OrganizationsPanel';
+import { Menu } from 'lucide-react';
+import { Message, PayrollSummary, WorkerSummary } from '@/utils/interface';
+import Footer from './Footer';
+
+type ChatMessage = Message & {
+  id: string;
+};
+
+type OpenAIMessage = {
+  role: 'system' | 'user' | 'assistant' | 'tool';
+  content: string;
+  tool_call_id?: string;
+  tool_calls?: ToolCall[];
+};
+
+type ToolCall = {
+  id: string;
+  type: 'function';
+  function: {
+    name: string;
+    arguments: string;
+  };
+};
+
+type OpenAIResponse = {
+  choices: Array<{
+    message: {
+      role: 'assistant';
+      content?: string | null;
+      tool_calls?: ToolCall[];
+    };
+    finish_reason: string;
+  }>;
+};
+
+interface JsonSchemaProperty {
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  description?: string;
+  enum?: string[];
+}
+
+// Dummy tools for teaching - replace real blockchain calls with static data
+/* eslint-disable @typescript-eslint/no-unused-vars */
+const dummyBlockchainMcpTools = {
+  fetch_user_organizations: {
+    description: 'Fetch user organizations',
+    execute: async (_args: Record<string, unknown>, _context: { toolCallId: string; messages: unknown[] }) => ({
+      success: true,
+      organizations: [
+        { name: 'Dummy Org 1', publicKey: 'dummyPda1', treasury: 100, workersCount: 5 },
+        { name: 'Dummy Org 2', publicKey: 'dummyPda2', treasury: 200, workersCount: 3 },
+      ],
+    }),
+  },
+  fetch_organization_details: {
+    description: 'Fetch organization details',
+    execute: async (args: { orgPda?: string }, _context: { toolCallId: string; messages: unknown[] }) => ({
+      success: true,
+      organization: {
+        name: args.orgPda ? `Dummy Org for ${args.orgPda}` : 'Unknown',
+        treasury: 150,
+        workersCount: 4,
+        workers: [
+          { publicKey: 'worker1', salary: 50, lastPaid: 1699999999 },
+          { publicKey: 'worker2', salary: 60, lastPaid: 1700000000 },
+        ],
+      },
+    }),
+  },
+  create_organization: {
+    description: 'Create organization',
+    execute: async (args: { name: string }, _context: { toolCallId: string; messages: unknown[] }) => ({
+      success: true,
+      message: `Dummy organization ${args.name} created`,
+      orgPda: 'dummyNewOrgPda',
+    }),
+  },
+  // Add dummies for other tools similarly...
+  add_worker: {
+    description: 'Add worker',
+    execute: async (_args: Record<string, unknown>, _context: { toolCallId: string; messages: unknown[] }) => ({ success: true, message: 'Dummy worker added' })
+  },
+  fund_treasury: {
+    description: 'Fund treasury',
+    execute: async (_args: Record<string, unknown>, _context: { toolCallId: string; messages: unknown[] }) => ({ success: true, message: 'Dummy treasury funded' })
+  },
+  process_payroll: {
+    description: 'Process payroll',
+    execute: async (_args: Record<string, unknown>, _context: { toolCallId: string; messages: unknown[] }) => ({ success: true, message: 'Dummy payroll processed' })
+  },
+  withdraw_from_treasury: {
+    description: 'Withdraw from treasury',
+    execute: async (_args: Record<string, unknown>, _context: { toolCallId: string; messages: unknown[] }) => ({ success: true, message: 'Dummy withdrawal' })
+  },
+};
+/* eslint-enable @typescript-eslint/no-unused-vars */
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getOpenAITools = () => {
+  return Object.entries(dummyBlockchainMcpTools).map(([name, tool]) => {
+    const properties: Record<string, JsonSchemaProperty> = {};
+    const required: string[] = [];
+
+    // Dummy schema parsing - simplified for teaching
+    // In real code, this would parse Zod schemas, but here we hardcode dummies
+    if (name === 'create_organization') {
+      properties['name'] = { type: 'string', description: 'Organization name' };
+      required.push('name');
+    }
+    // Add for others...
+
+    return {
+      type: 'function' as const,
+      function: {
+        name,
+        description: tool.description || 'No description provided.',
+        parameters: {
+          type: 'object',
+          properties,
+          required,
+        },
+      },
+    };
+  });
+};
+
+const formatToolResponse = (toolName: string, toolArgs: Record<string, unknown>, toolOutput: unknown): string => {
+  const lines: string[] = [];
+
+  let outputData: Record<string, unknown> = {};
+  if (typeof toolOutput === 'string') {
+    try {
+      outputData = JSON.parse(toolOutput);
+    } catch {
+      outputData = { result: toolOutput };
+    }
+  } else if (typeof toolOutput === 'object' && toolOutput !== null) {
+    outputData = toolOutput as Record<string, unknown>;
+  }
+
+  if ('error' in outputData) {
+    lines.push('');
+    lines.push(`### ❌ Error`);
+    lines.push('');
+    lines.push(`${outputData.error}`);
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  if ('success' in outputData && !outputData.success) {
+    lines.push('');
+    lines.push(`### ⚠️ Operation Failed`);
+    lines.push('');
+    if ('message' in outputData) {
+      lines.push(`${outputData.message}`);
+    }
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  lines.push('');
+  lines.push('### ✅ Operation Successful');
+  lines.push('');
+
+  if ('message' in outputData && outputData.message) {
+    lines.push(`📝 ${outputData.message}`);
+    lines.push('');
+  }
+
+  if ('signature' in outputData || 'workerPda' in outputData || 'orgPda' in outputData) {
+    lines.push('');
+  }
+
+  if ('organizations' in outputData && Array.isArray(outputData.organizations)) {
+    lines.push('### 📋 Your Organizations');
+    lines.push('');
+    outputData.organizations.forEach((org: unknown, index: number) => {
+      const orgData = org as Record<string, unknown>;
+      lines.push(`**${index + 1}. ${orgData.name || 'Unknown'}**`);
+      lines.push(`- Treasury: **${Number(orgData.treasury || 0).toFixed(2)} SOL**`);
+      lines.push(`- Workers: ${orgData.workersCount || 0}`);
+      if (orgData.publicKey) {
+        lines.push(`- Address: \`${orgData.publicKey}\``);
+      }
+      lines.push('');
+    });
+  }
+
+  if ('organization' in outputData && typeof outputData.organization === 'object') {
+    const org = outputData.organization as Record<string, unknown>;
+    lines.push('### 🏢 Organization Details');
+    lines.push('');
+    lines.push(`**Name**: ${org.name || 'Unknown'}`);
+    lines.push(`**Treasury Balance**: ${Number(org.treasury || 0).toFixed(2)} SOL`);
+    lines.push(`**Total Workers**: ${org.workersCount || 0}`);
+
+    if (org.workers && Array.isArray(org.workers) && org.workers.length > 0) {
+      lines.push('');
+      lines.push('#### 👥 Workers');
+      lines.push('');
+      org.workers.forEach((worker: unknown, index: number) => {
+        const w = worker as Record<string, unknown>;
+        lines.push(`**${index + 1}.** \`${w.publicKey || 'N/A'}\``);
+        lines.push(`- Salary: **${Number(w.salary || 0).toFixed(2)} SOL**`);
+        lines.push(`- Last Paid: ${w.lastPaid ? new Date(Number(w.lastPaid) * 1000).toLocaleDateString() : 'Never'}`);
+        lines.push('');
+      });
+    }
+  }
+
+  if ('results' in outputData && Array.isArray(outputData.results)) {
+    lines.push('### 💰 Payroll Processing Results');
+    lines.push('');
+    outputData.results.forEach((result: unknown) => {
+      const r = result as Record<string, unknown>;
+      const status = r.success ? '✅' : '❌';
+      lines.push(`${status} Worker \`${r.workerPublicKey || 'Unknown'}\`: ${r.message || 'No details'}`);
+    });
+    lines.push('');
+  }
+
+  const displayedKeys = ['success', 'message', 'signature', 'workerPda', 'orgPda', 'organizations', 'organization', 'results', 'error'];
+  const remainingKeys = Object.keys(outputData).filter(key => !displayedKeys.includes(key));
+
+  if (remainingKeys.length > 0) {
+    lines.push('### 📊 Additional Details');
+    lines.push('');
+    remainingKeys.forEach(key => {
+      const value = outputData[key];
+      if (typeof value === 'object') {
+        lines.push(`- **${key}**: \`${JSON.stringify(value)}\``);
+      } else {
+        lines.push(`- **${key}**: ${value}`);
+      }
+    });
+    lines.push('');
+  }
+
+  return lines.join('\n');
+};
+
+const Dashboard = () => {
+  const [isPayrollOpen, setIsPayrollOpen] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+  const [organizations, setOrganizations] = useState<PayrollSummary[]>([]);
+  const [userApiKey, setUserApiKey] = useState<string>('');
+  const [apiKeySet, setApiKeySet] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const dummyPublicKey = 'dummyPublicKey'; // Dummy public key for teaching
+
+  // Initialize messages with API key requirement check
+  useEffect(() => {
+    const hasEnvKey = true; // Dummy: Assume key is set for teaching
+    setApiKeySet(hasEnvKey);
+
+    if (hasEnvKey) {
+      setMessages([
+        {
+          id: 'initial',
+          role: 'bot' as const,
+          content: 'Hi! I can help manage your payroll organizations. Ask me to create orgs, add workers, process payroll, or fetch details.',
+          timestamp: new Date(),
+        },
+      ]);
+    } else {
+      setMessages([
+        {
+          id: 'initial',
+          role: 'bot' as const,
+          content: 'Welcome! To get started, I need your OpenAI API key. Please enter it below to enable chat functionality.',
+          timestamp: new Date(),
+        },
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPayrollOpen(window.innerWidth >= 1024);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      const tool = dummyBlockchainMcpTools.fetch_user_organizations;
+      if (!tool || !tool.execute) {
+        console.error('fetch_user_organizations tool not available');
+        return;
+      }
+
+      try {
+        const result = await tool.execute({}, { toolCallId: 'load-orgs', messages: [] });
+
+        if (typeof result === 'object' && result !== null && 'success' in result) {
+          if (result.success && Array.isArray(result.organizations)) {
+            const mappedOrgs: PayrollSummary[] = result.organizations.map((org: unknown) => {
+              const orgData = org as Record<string, unknown>;
+              const workerCount = Number(orgData.workersCount || 0);
+              return {
+                id: String(orgData.publicKey || orgData.name || ''),
+                orgName: String(orgData.name || 'Unknown'),
+                treasury: Number(orgData.treasury || 0),
+                createdAt: Number(orgData.createdAt || 0),
+                workers: Array.from({ length: workerCount }, () => ({}) as WorkerSummary),
+              };
+            });
+            setOrganizations(mappedOrgs);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load organizations:', error);
+      }
+    };
+
+    loadOrganizations();
+  }, []);
+
+  const handleApiKeySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userApiKey.trim()) {
+      setApiKeySet(true);
+      const assistantMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'bot' as const,
+        content: 'Great! API key configured. Now I can help manage your payroll organizations. Ask me to create orgs, add workers, process payroll, or fetch details.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    }
+  };
+
+  const generateResponse = async (userInput: string) => {
+    setIsLoading(true);
+
+    try {
+      const userMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'user' as const,
+        content: userInput,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+
+      const systemPrompt: OpenAIMessage = {
+        role: 'system',
+        content: `You are a helpful payroll management assistant on Solana blockchain. 
+
+        Your available organizations:
+        ${organizations.map(org => `- ${org.orgName} (ID: ${org.id})`).join('\n')}
+
+        When users ask to:
+        - "Show organizations" or "list my orgs" → use fetch_user_organizations (no parameters needed)
+        - "Show details for [ORG_NAME]" → use fetch_organization_details with orgPda from the list above
+        - "Create organization [NAME]" → use create_organization with the name parameter
+        - "Add worker" → use add_worker with orgPda, workerPublicKey, and salaryInSol
+        - "Fund treasury" → use fund_treasury with orgPda and amountInSol
+        - "Process payroll" → use process_payroll with orgPda
+        - "Withdraw [AMOUNT] from [ORG_NAME]" → use withdraw_from_treasury with orgPda and amountInSol
+
+        CRITICAL RULES:
+        1. When a user mentions an organization by name (like "TESLA"), look it up in the list above to get its orgPda/ID
+        2. Always extract ALL required parameters from user requests
+        3. For fetch_organization_details, you MUST provide the orgPda parameter - use the ID from the organizations list
+        4. If a parameter is missing, ask the user for it
+        5. Be conversational and friendly in your responses
+        6. After tools execute, provide a brief, natural summary - the tool results are already formatted nicely
+
+        Available tools: ${Object.keys(dummyBlockchainMcpTools).join(', ')}`,
+      };
+
+      const conversationMessages: OpenAIMessage[] = [
+        systemPrompt,
+        ...messages.map((m) => ({
+          role: (m.role === 'bot' ? 'assistant' : 'user') as 'assistant' | 'user',
+          content: m.content,
+        })),
+        {
+          role: 'user',
+          content: userInput,
+        }
+      ];
+
+      let fullResponse = '';
+      let iterations = 0;
+      const maxIterations = 5;
+
+      while (iterations < maxIterations) {
+        iterations++;
+
+        // Dummy AI response simulation instead of real fetch
+        const dummyChoice: OpenAIResponse['choices'][number] = {
+          message: {
+            role: 'assistant',
+            content: null,
+            tool_calls: userInput.includes('create') ? [{ id: 'dummy1', type: 'function', function: { name: 'create_organization', arguments: '{"name":"DummyOrg"}' } }] : [],
+          },
+          finish_reason: 'tool_calls',
+        };
+        const data: OpenAIResponse = { choices: [dummyChoice] };
+        const choice = data.choices[0];
+
+        if (!choice || !choice.message) {
+          throw new Error('Invalid AI response structure');
+        }
+
+        const message = choice.message;
+
+        conversationMessages.push({
+          role: 'assistant',
+          content: message.content || '',
+          tool_calls: message.tool_calls,
+        });
+
+        if (message.content) {
+          fullResponse += message.content + '\n';
+        }
+
+        if (message.tool_calls && message.tool_calls.length > 0) {
+          for (const toolCall of message.tool_calls) {
+            const toolName = toolCall.function.name;
+            const toolArgs = JSON.parse(toolCall.function.arguments || '{}');
+
+            let toolOutput: unknown;
+            try {
+              const tool = dummyBlockchainMcpTools[toolName as keyof typeof dummyBlockchainMcpTools];
+              if (!tool || !tool.execute) {
+                throw new Error(`Unknown tool: ${toolName}`);
+              }
+
+              toolOutput = await tool.execute(toolArgs, {
+                toolCallId: toolCall.id,
+                messages: []
+              });
+
+              if (toolOutput && typeof toolOutput === 'object' && Symbol.asyncIterator in toolOutput) {
+                let str = '';
+                for await (const chunk of toolOutput as AsyncIterable<unknown>) {
+                  if (typeof chunk === 'string') str += chunk;
+                }
+                toolOutput = str;
+              }
+            } catch (error) {
+              console.error(`Tool execution error for ${toolName}:`, error);
+              toolOutput = { error: (error as Error).message };
+            }
+
+            const formattedOutput = formatToolResponse(toolName, toolArgs, toolOutput);
+            fullResponse += formattedOutput;
+
+            const toolContent = typeof toolOutput === 'string'
+              ? toolOutput
+              : JSON.stringify(toolOutput, null, 2);
+
+            conversationMessages.push({
+              role: 'tool',
+              content: toolContent,
+              tool_call_id: toolCall.id,
+            });
+          }
+
+          continue;
+        }
+
+        if (choice.finish_reason === 'stop') {
+          break;
+        }
+      }
+
+      if (!fullResponse.trim()) {
+        fullResponse = 'I received your message but couldn\'t generate a response. Please try again.';
+      }
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'bot' as const,
+        content: fullResponse.trim(),
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      const tool = dummyBlockchainMcpTools.fetch_user_organizations;
+      const result = await tool.execute({}, { toolCallId: 'refresh', messages: [] });
+      if (result && typeof result === 'object' && 'success' in result && result.success) {
+        const mappedOrgs: PayrollSummary[] = (result.organizations as unknown[]).map((org: unknown) => {
+          const orgData = org as Record<string, unknown>;
+          const workerCount = Number(orgData.workersCount || 0);
+          return {
+            id: String(orgData.publicKey || orgData.name || ''),
+            orgName: String(orgData.name || 'Unknown'),
+            treasury: Number(orgData.treasury || 0),
+            workers: Array.from({ length: workerCount }, () => ({}) as WorkerSummary),
+            createdAt: Number(orgData.createdAt || 0),
+          };
+        });
+        setOrganizations(mappedOrgs);
+      }
+
+    } catch (error) {
+      console.error('Error generating response:', error);
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'bot' as const,
+        content: `Sorry, something went wrong: ${(error as Error).message}`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (input.trim()) {
+      generateResponse(input);
+      setInput('');
+    }
+  };
+
+  const formatLamports = (lamports: number) => {
+    return lamports.toFixed(2) + ' SOL';
+  };
+
+  const handleViewDetails = (orgName: string) => {
+    generateResponse(`Show details for organization ${orgName}`);
+  };
+
+  const handleTogglePanel = () => {
+    setIsPayrollOpen(!isPayrollOpen);
+  };
+
+  return (
+    <div className="relative min-h-screen flex flex-col">
+      <Header />
+
+      {!dummyPublicKey && (
+        <div className="fixed top-20 right-4 z-40 px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-xs sm:text-sm text-white/80">
+          Connect your wallet to enable transactions.
+        </div>
+      )}
+
+      <main className="relative z-10 flex-1 pt-24 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                Dashboard
+              </h1>
+              <p className="mt-1 text-sm text-white/50">
+                Manage your organizations and run payroll through the assistant.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 min-h-[calc(100vh-14rem)]">
+            <div className={`${isPayrollOpen ? 'lg:col-span-2' : 'lg:col-span-3'} min-h-[60vh] flex`}>
+              <ChatPanel
+                messages={messages}
+                input={input}
+                isLoading={isLoading || !apiKeySet}
+                isPayrollOpen={isPayrollOpen}
+                publicKey={dummyPublicKey}
+                onInputChange={setInput}
+                onSubmit={handleSubmit}
+                apiKeySet={apiKeySet}
+                userApiKey={userApiKey}
+                onApiKeyChange={setUserApiKey}
+                onApiKeySubmit={handleApiKeySubmit}
+              />
+            </div>
+
+            <OrganizationsPanel
+              organizations={organizations}
+              selectedOrg={selectedOrg}
+              isOpen={isPayrollOpen}
+              onToggle={handleTogglePanel}
+              onSelectOrg={setSelectedOrg}
+              onViewDetails={handleViewDetails}
+              formatLamports={formatLamports}
+            />
+          </div>
+
+          {!isPayrollOpen && (
+            <button
+              onClick={handleTogglePanel}
+              className="fixed right-4 sm:right-6 bottom-6 sm:top-24 sm:bottom-auto z-40 h-11 px-4 inline-flex items-center gap-2 rounded-lg bg-white/[0.06] border border-white/[0.1] backdrop-blur-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/[0.1] transition-colors"
+              aria-label="Open organizations panel"
+            >
+              <Menu className="w-4 h-4" />
+              <span className="hidden sm:inline">Organizations</span>
+            </button>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Dashboard;

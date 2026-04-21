@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+:root {
+  /* Neutral-first palette with one accent */
+  --background: #0a0a0c;
+  --background-elevated: #111114;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --foreground: #f4f4f6;
+  --muted: #8e8e99;
+  --muted-strong: #c1c1cb;
+
+  /* Single accent — Solana green */
+  --accent: #14f195;
+  --accent-soft: rgba(20, 241, 149, 0.12);
+  --accent-strong: #1ffda2;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
+    0 20px 48px -24px rgba(0, 0, 0, 0.8);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(20, 241, 149, 0.25);
+  color: #fff;
+}
+
+/* Ambient background — very subtle, monochrome vignette with a single faint accent glow */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(1000px 600px at 85% -10%, rgba(255, 255, 255, 0.04), transparent 60%),
+    radial-gradient(800px 500px at 10% 110%, rgba(20, 241, 149, 0.04), transparent 60%);
+}
+
+/* Grid pattern overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* Thin, unobtrusive scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Card surface — flat, no gradient */
+.surface-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.surface-card-hover {
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.surface-card-hover:hover {
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Heading emphasis — now white, not gradient */
+.gradient-text {
+  color: var(--foreground);
+}
+
+/* Accent text helper */
+.accent-text {
+  color: var(--accent);
+}
+
+/* Primary CTA — solid accent */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  color: #0a0a12;
+  background: var(--accent);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.2) inset,
+    0 6px 18px -10px rgba(20, 241, 149, 0.45);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.btn-primary:hover {
+  background: var(--accent-strong);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
+    0 10px 24px -10px rgba(20, 241, 149, 0.5);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+/* Subtle fade-in */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Wallet adapter — neutral with accent */
+.wallet-adapter-button-trigger {
+  background: var(--accent) !important;
+  color: #0a0a12 !important;
+  border-radius: 0.625rem !important;
+  font-weight: 600 !important;
+  height: auto !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  transition: background 180ms ease !important;
+}
+.wallet-adapter-button-trigger:hover {
+  background: var(--accent-strong) !important;
+}
