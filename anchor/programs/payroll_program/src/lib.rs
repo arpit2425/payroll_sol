@@ -1,16 +1,18 @@
 use anchor_lang::prelude::*;
-
-declare_id!("A9fnM3skS5kbECt2isFV2EGvS4D7hnsMjnqi2YBwaeed");
+mod errors;
+mod instructions;
+mod states;
+pub use instructions::add_worker::*;
+pub use instructions::create_org::*;
+declare_id!("Hv6mkobFWeU5hhrVkfimUEFerhYYmvkZkiyFxLn6V9P9");
 
 #[program]
-pub mod hello_world {
+pub mod payroll_program {
     use super::*;
-
-    pub fn hello(_ctx: Context<Hello>) -> Result<()> {
-        msg!("Hello, World!");
-        Ok(())
+    pub fn create_org(ctx: Context<CreateOrg>, name: String) -> Result<()> {
+        instructions::create_org::create_org(ctx, name)
+    }
+    pub fn add_worker(ctx: Context<AddWorker>, salary: u64) -> Result<()> {
+        instructions::add_worker::add_worker(ctx, salary)
     }
 }
-
-#[derive(Accounts)]
-pub struct Hello {}
