@@ -1,8 +1,10 @@
+use crate::errors::PayrollError;
 use crate::errors::PayrollError::*;
 use anchor_lang::prelude::*;
 
 use crate::states::{organization::Organization, worker::Worker};
 pub fn add_worker(ctx: Context<AddWorker>, salary: u64) -> Result<()> {
+    require!(salary > 0, PayrollError::InvalidSalary);
     let worker = &mut ctx.accounts.worker;
     let org = &mut ctx.accounts.org;
     worker.org = org.key();
