@@ -7,36 +7,37 @@ import OrganizationsPanel from './OrganizationsPanel';
 import { Menu } from 'lucide-react';
 import { Message, PayrollSummary, WorkerSummary } from '@/utils/interface';
 import Footer from './Footer';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { fetchUserOrganizations } from '@/services/blockchain';
 
 type ChatMessage = Message & {
   id: string;
 };
 
-type OpenAIMessage = {
-  role: 'system' | 'user' | 'assistant' | 'tool';
-  content: string;
-  tool_call_id?: string;
-  tool_calls?: ToolCall[];
+type GeminiFunctionCall = {
+  name: string;
+  args: Record<string, unknown>;
 };
 
-type ToolCall = {
-  id: string;
-  type: 'function';
-  function: {
-    name: string;
-    arguments: string;
-  };
+type GeminiPart =
+  | { text: string }
+  | { functionCall: GeminiFunctionCall }
+  | { functionResponse: { name: string; response: Record<string, unknown> } };
+
+type GeminiContent = {
+  role: 'user' | 'model';
+  parts: GeminiPart[];
 };
 
-type OpenAIResponse = {
-  choices: Array<{
-    message: {
-      role: 'assistant';
-      content?: string | null;
-      tool_calls?: ToolCall[];
+type GeminiResponse = {
+  candidates?: Array<{
+    content: {
+      parts: GeminiPart[];
+      role: 'model';
     };
-    finish_reason: string;
+    finishReason: string;
   }>;
+  error?: { message: string };
 };
 
 interface JsonSchemaProperty {
@@ -101,23 +102,18 @@ const dummyBlockchainMcpTools = {
 };
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getOpenAITools = () => {
-  return Object.entries(dummyBlockchainMcpTools).map(([name, tool]) => {
-    const properties: Record<string, JsonSchemaProperty> = {};
-    const required: string[] = [];
+const getGeminiTools = () => {
+  return {
+    functionDeclarations: Object.entries(dummyBlockchainMcpTools).map(([name, tool]) => {
+      const properties: Record<string, JsonSchemaProperty> = {};
+      const required: string[] = [];
 
-    // Dummy schema parsing - simplified for teaching
-    // In real code, this would parse Zod schemas, but here we hardcode dummies
-    if (name === 'create_organization') {
-      properties['name'] = { type: 'string', description: 'Organization name' };
-      required.push('name');
-    }
-    // Add for others...
+      if (name === 'create_organization') {
+        properties['name'] = { type: 'string', description: 'Organization name' };
+        required.push('name');
+      }
 
-    return {
-      type: 'function' as const,
-      function: {
+      return {
         name,
         description: tool.description || 'No description provided.',
         parameters: {
@@ -125,9 +121,9 @@ const getOpenAITools = () => {
           properties,
           required,
         },
-      },
-    };
-  });
+      };
+    }),
+  };
 };
 
 const formatToolResponse = (toolName: string, toolArgs: Record<string, unknown>, toolOutput: unknown): string => {
@@ -254,12 +250,12 @@ const Dashboard = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const dummyPublicKey = 'dummyPublicKey'; // Dummy public key for teaching
+  const { publicKey, signTransaction } = useWallet();
 
   // Initialize messages with API key requirement check
   useEffect(() => {
-    const hasEnvKey = true; // Dummy: Assume key is set for teaching
-    setApiKeySet(hasEnvKey);
+    const hasEnvKey = !!process.env.NEXT_GEMINI_API_KEY; 
+   
 
     if (hasEnvKey) {
       setMessages([
@@ -275,13 +271,15 @@ const Dashboard = () => {
         {
           id: 'initial',
           role: 'bot' as const,
-          content: 'Welcome! To get started, I need your OpenAI API key. Please enter it below to enable chat functionality.',
+          content: 'Welcome! To get started, I need your Gemini API key. Please enter it below to enable chat functionality.',
           timestamp: new Date(),
         },
       ]);
     }
   }, []);
-
+ const getActiveApiKey = () => {
+      return userApiKey.trim() ||  process.env.NEXT_GEMINI_API_KEY || '';
+    }
   useEffect(() => {
     const handleResize = () => {
       setIsPayrollOpen(window.innerWidth >= 1024);
@@ -295,31 +293,28 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadOrganizations = async () => {
-      const tool = dummyBlockchainMcpTools.fetch_user_organizations;
-      if (!tool || !tool.execute) {
-        console.error('fetch_user_organizations tool not available');
-        return;
-      }
+      if(!publicKey) return;
+     
 
       try {
-        const result = await tool.execute({}, { toolCallId: 'load-orgs', messages: [] });
-
-        if (typeof result === 'object' && result !== null && 'success' in result) {
-          if (result.success && Array.isArray(result.organizations)) {
-            const mappedOrgs: PayrollSummary[] = result.organizations.map((org: unknown) => {
-              const orgData = org as Record<string, unknown>;
-              const workerCount = Number(orgData.workersCount || 0);
-              return {
-                id: String(orgData.publicKey || orgData.name || ''),
-                orgName: String(orgData.name || 'Unknown'),
-                treasury: Number(orgData.treasury || 0),
-                createdAt: Number(orgData.createdAt || 0),
-                workers: Array.from({ length: workerCount }, () => ({}) as WorkerSummary),
-              };
-            });
-            setOrganizations(mappedOrgs);
-          }
-        }
+        console.log('Fetching organizations for public key:', publicKey.toBase58());
+        // const result = await fetchUserOrganizations(publicKey);
+        // if (typeof result === 'object' && result !== null && 'success' in result) {
+        //   if (result.success && Array.isArray(result.organizations)) {
+        //     const mappedOrgs: PayrollSummary[] = result.organizations.map((org: unknown) => {
+        //       const orgData = org as Record<string, unknown>;
+        //       const workerCount = Number(orgData.workersCount || 0);
+        //       return {
+        //         id: String(orgData.publicKey || orgData.name || ''),
+        //         orgName: String(orgData.name || 'Unknown'),
+        //         treasury: Number(orgData.treasury || 0),
+        //         createdAt: Number(orgData.createdAt || 0),
+        //         workers: Array.from({ length: workerCount }, () => ({}) as WorkerSummary),
+        //       };
+        //     });
+        //     setOrganizations(mappedOrgs);
+        //   }
+        // }
       } catch (error) {
         console.error('Failed to load organizations:', error);
       }
@@ -354,9 +349,7 @@ const Dashboard = () => {
       };
       setMessages((prev) => [...prev, userMessage]);
 
-      const systemPrompt: OpenAIMessage = {
-        role: 'system',
-        content: `You are a helpful payroll management assistant on Solana blockchain. 
+      const systemInstructionText = `You are a helpful payroll management assistant on Solana blockchain.
 
         Your available organizations:
         ${organizations.map(org => `- ${org.orgName} (ID: ${org.id})`).join('\n')}
@@ -378,60 +371,84 @@ const Dashboard = () => {
         5. Be conversational and friendly in your responses
         6. After tools execute, provide a brief, natural summary - the tool results are already formatted nicely
 
-        Available tools: ${Object.keys(dummyBlockchainMcpTools).join(', ')}`,
-      };
+        Available tools: ${Object.keys(dummyBlockchainMcpTools).join(', ')}`;
 
-      const conversationMessages: OpenAIMessage[] = [
-        systemPrompt,
-        ...messages.map((m) => ({
-          role: (m.role === 'bot' ? 'assistant' : 'user') as 'assistant' | 'user',
-          content: m.content,
+      const contents: GeminiContent[] = [
+        ...messages.map((m): GeminiContent => ({
+          role: m.role === 'bot' ? 'model' : 'user',
+          parts: [{ text: m.content }],
         })),
         {
           role: 'user',
-          content: userInput,
-        }
+          parts: [{ text: userInput }],
+        },
       ];
 
       let fullResponse = '';
       let iterations = 0;
       const maxIterations = 5;
+      const activeKey = getActiveApiKey();
 
       while (iterations < maxIterations) {
         iterations++;
 
-        // Dummy AI response simulation instead of real fetch
-        const dummyChoice: OpenAIResponse['choices'][number] = {
-          message: {
-            role: 'assistant',
-            content: null,
-            tool_calls: userInput.includes('create') ? [{ id: 'dummy1', type: 'function', function: { name: 'create_organization', arguments: '{"name":"DummyOrg"}' } }] : [],
-          },
-          finish_reason: 'tool_calls',
-        };
-        const data: OpenAIResponse = { choices: [dummyChoice] };
-        const choice = data.choices[0];
+        const response = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': activeKey,
+            },
+            body: JSON.stringify({
+              contents,
+              systemInstruction: { parts: [{ text: systemInstructionText }] },
+              tools: [getGeminiTools()],
+            }),
+          }
+        );
 
-        if (!choice || !choice.message) {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch AI response, ${response.status}: ${response.statusText}`);
+        }
+
+        const data: GeminiResponse = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error.message);
+        }
+
+        const candidate = data.candidates?.[0];
+
+        if (!candidate || !candidate.content) {
           throw new Error('Invalid AI response structure');
         }
 
-        const message = choice.message;
+        const modelParts = candidate.content.parts || [];
 
-        conversationMessages.push({
-          role: 'assistant',
-          content: message.content || '',
-          tool_calls: message.tool_calls,
+        contents.push({
+          role: 'model',
+          parts: modelParts,
         });
 
-        if (message.content) {
-          fullResponse += message.content + '\n';
+        const textParts = modelParts.filter(
+          (p): p is { text: string } => 'text' in p
+        );
+        const functionCalls = modelParts.filter(
+          (p): p is { functionCall: GeminiFunctionCall } => 'functionCall' in p
+        );
+
+        const modelText = textParts.map((p) => p.text).join('');
+        if (modelText) {
+          fullResponse += modelText + '\n';
         }
 
-        if (message.tool_calls && message.tool_calls.length > 0) {
-          for (const toolCall of message.tool_calls) {
-            const toolName = toolCall.function.name;
-            const toolArgs = JSON.parse(toolCall.function.arguments || '{}');
+        if (functionCalls.length > 0) {
+          const functionResponseParts: GeminiPart[] = [];
+
+          for (const fnCall of functionCalls) {
+            const toolName = fnCall.functionCall.name;
+            const toolArgs = fnCall.functionCall.args || {};
 
             let toolOutput: unknown;
             try {
@@ -440,18 +457,13 @@ const Dashboard = () => {
                 throw new Error(`Unknown tool: ${toolName}`);
               }
 
-              toolOutput = await tool.execute(toolArgs, {
-                toolCallId: toolCall.id,
-                messages: []
+              toolOutput = await (tool.execute as (
+                args: Record<string, unknown>,
+                ctx: { toolCallId: string; messages: unknown[] }
+              ) => Promise<unknown>)(toolArgs, {
+                toolCallId: toolName,
+                messages: [],
               });
-
-              if (toolOutput && typeof toolOutput === 'object' && Symbol.asyncIterator in toolOutput) {
-                let str = '';
-                for await (const chunk of toolOutput as AsyncIterable<unknown>) {
-                  if (typeof chunk === 'string') str += chunk;
-                }
-                toolOutput = str;
-              }
             } catch (error) {
               console.error(`Tool execution error for ${toolName}:`, error);
               toolOutput = { error: (error as Error).message };
@@ -460,23 +472,32 @@ const Dashboard = () => {
             const formattedOutput = formatToolResponse(toolName, toolArgs, toolOutput);
             fullResponse += formattedOutput;
 
-            const toolContent = typeof toolOutput === 'string'
-              ? toolOutput
-              : JSON.stringify(toolOutput, null, 2);
+            const responseObject: Record<string, unknown> =
+              typeof toolOutput === 'object' && toolOutput !== null
+                ? (toolOutput as Record<string, unknown>)
+                : { result: toolOutput };
 
-            conversationMessages.push({
-              role: 'tool',
-              content: toolContent,
-              tool_call_id: toolCall.id,
+            functionResponseParts.push({
+              functionResponse: {
+                name: toolName,
+                response: responseObject,
+              },
             });
           }
+
+          contents.push({
+            role: 'user',
+            parts: functionResponseParts,
+          });
 
           continue;
         }
 
-        if (choice.finish_reason === 'stop') {
+        if (candidate.finishReason === 'STOP' || candidate.finishReason === 'MAX_TOKENS') {
           break;
         }
+
+        break;
       }
 
       if (!fullResponse.trim()) {
@@ -546,7 +567,7 @@ const Dashboard = () => {
     <div className="relative min-h-screen flex flex-col">
       <Header />
 
-      {!dummyPublicKey && (
+      {!publicKey && (
         <div className="fixed top-20 right-4 z-40 px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-xs sm:text-sm text-white/80">
           Connect your wallet to enable transactions.
         </div>
@@ -572,7 +593,7 @@ const Dashboard = () => {
                 input={input}
                 isLoading={isLoading || !apiKeySet}
                 isPayrollOpen={isPayrollOpen}
-                publicKey={dummyPublicKey}
+                publicKey={publicKey?.toBase58() }
                 onInputChange={setInput}
                 onSubmit={handleSubmit}
                 apiKeySet={apiKeySet}
