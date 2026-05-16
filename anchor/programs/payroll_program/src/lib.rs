@@ -24,7 +24,7 @@ pub mod payroll_program {
     pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
         instructions::withdraw::withdraw(ctx, amount)
     }
-    pub fn process_payroll(ctx: Context<ProcessPayroll>, cycle_timestamp: u64) -> Result<()> {
+    pub fn process_payroll<'info>(ctx: Context<'info, ProcessPayroll<'info>>, cycle_timestamp: u64) -> Result<()> {
         instructions::process_payroll::process_payroll(ctx, cycle_timestamp)
     }
 }

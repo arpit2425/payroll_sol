@@ -13,7 +13,7 @@ payroll_program = "A9fnM3skS5kbECt2isFV2EGvS4D7hnsMjnqi2YBwaeed"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Play, Zap, Shuffle, Trash2, Copy, Check } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 interface TestData {
     orgName: string;
@@ -26,6 +27,7 @@ const Page: React.FC = () => {
     const [logs, setLogs] = useState<Log[]>([]);
     const [loading, setLoading] = useState<string | null>(null);
     const [copied, setCopied] = useState<string | null>(null);
+    const { publicKey, signTransaction } = useWallet();
     const [testData, setTestData] = useState<TestData>({
         orgName: 'TechCorp',
         workerAddress: '',
@@ -77,6 +79,10 @@ const Page: React.FC = () => {
     };
 
     const testCreateOrganization = async () => {
+        if (!publicKey || !signTransaction) {
+            addLog('Wallet not connected', 'error');
+            return;
+        }
         setLoading('createOrg');
         try {
             addLog(`Creating organization: ${testData.orgName}`, 'info');
