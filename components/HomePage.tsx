@@ -1,14 +1,10 @@
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import {
     ArrowRight,
-    Sparkles,
     Shield,
     Zap,
     MessageSquareText,
-    Wallet,
-    TrendingUp,
-    Clock,
-    Lock,
+    Sparkles,
 } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
@@ -35,9 +31,9 @@ const features = [
 ];
 
 const stats = [
-    { icon: Clock, value: '<1s', label: 'Avg. settlement' },
-    { icon: TrendingUp, value: '99.9%', label: 'Network uptime' },
-    { icon: Lock, value: '100%', label: 'Self-custodial' },
+    { value: '<1s', label: 'Avg. settlement' },
+    { value: '99.9%', label: 'Network uptime' },
+    { value: '100%', label: 'Self-custodial' },
 ];
 
 const HomePage = () => {
@@ -60,75 +56,94 @@ const HomePage = () => {
     }, [connected, setVisible, router]);
 
     return (
-        <div className="relative min-h-screen flex flex-col overflow-hidden">
+        <div className="relative min-h-screen flex flex-col">
+            {/* Subtle accent halo behind hero */}
+            <div
+                className="pointer-events-none absolute top-0 inset-x-0 h-[600px] z-0 opacity-50"
+                style={{
+                    background:
+                        'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99, 102, 241, 0.18), transparent 70%)',
+                }}
+            />
+
             <Header />
 
             <main className="relative z-10 flex-1 pt-32 pb-24">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-6xl mx-auto px-5 lg:px-8">
                     {/* Hero */}
                     <div className="max-w-3xl mx-auto text-center animate-fade-up">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-medium text-white/70">
-                            <Sparkles className="w-3.5 h-3.5 text-[#14f195]" />
+                        <a
+                            href="/features"
+                            className="inline-flex items-center gap-1.5 pl-2 pr-3 py-1 rounded-full bg-[#131319] border border-[#23232d] hover:border-[#2e2e3a] text-[11px] font-medium text-[#c7c7cf] transition-colors"
+                        >
+                            <span className="inline-flex items-center gap-1 px-1.5 py-px rounded-full bg-[#6366f1]/15 text-[#7c7ff5] text-[10px] font-semibold uppercase tracking-wider">
+                                <Sparkles className="w-2.5 h-2.5" />
+                                New
+                            </span>
                             AI-powered payroll on Solana
-                        </div>
+                            <ArrowRight className="w-3 h-3 text-[#8b8b96]" />
+                        </a>
 
-                        <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white">
-                            Payroll, reduced to{' '}
-                            <span className="gradient-text">a conversation.</span>
+                        <h1 className="mt-7 text-5xl sm:text-6xl md:text-7xl font-semibold tracking-[-0.04em] leading-[0.95] text-white">
+                            Payroll, reduced
+                            <br />
+                            to{' '}
+                            <span className="bg-gradient-to-br from-[#a5a7f8] via-[#7c7ff5] to-[#6366f1] bg-clip-text text-transparent">
+                                a conversation
+                            </span>
+                            .
                         </h1>
 
-                        <p className="mt-6 text-base sm:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-                            Manage decentralized payroll through natural language. Create
-                            organizations, fund treasuries, and settle payouts on-chain — all by
-                            chatting with your assistant.
+                        <p className="mt-7 text-[15px] sm:text-base text-[#aeaeb8] leading-[1.65] max-w-xl mx-auto">
+                            Manage decentralized payroll through natural language. Create organizations,
+                            fund treasuries, and settle payouts on-chain — all by chatting.
                         </p>
 
-                        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+                        <div className="mt-9 flex flex-col sm:flex-row gap-2 justify-center">
                             <button
                                 onClick={handleLaunchDashboard}
                                 className="btn-primary group"
                             >
                                 {connected ? 'Open dashboard' : 'Connect wallet'}
-                                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
                             </button>
                             <a href="/features" className="btn-secondary">
-                                Explore features
+                                Learn more
                             </a>
-                        </div>
-
-                        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-white/40">
-                            <Wallet className="w-3.5 h-3.5" />
-                            Supports Phantom · Devnet
                         </div>
                     </div>
 
-                    {/* Product preview card */}
-                    <div className="mt-20 max-w-4xl mx-auto animate-fade-up" style={{ animationDelay: '120ms' }}>
-                        <div className="surface-card rounded-2xl p-2 shadow-[0_30px_80px_-30px_rgba(153,69,255,0.35)]">
-                            <div className="rounded-xl bg-[#0a0a14] border border-white/[0.06] overflow-hidden">
-                                <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/[0.06]">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                                    <span className="ml-3 text-xs font-mono text-white/40">
-                                        dapppay.sol / assistant
+                    {/* Product preview */}
+                    <div className="mt-24 max-w-3xl mx-auto animate-fade-up">
+                        <div className="relative">
+                            {/* Subtle glow behind preview */}
+                            <div
+                                className="absolute -inset-px rounded-xl opacity-60 blur-2xl"
+                                style={{
+                                    background:
+                                        'radial-gradient(ellipse 50% 100% at 50% 0%, rgba(99, 102, 241, 0.3), transparent 70%)',
+                                }}
+                            />
+                            <div className="relative bg-[#131319] border border-[#23232d] rounded-xl overflow-hidden">
+                                <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-[#23232d] bg-[#0e0e13]">
+                                    <span className="w-2 h-2 rounded-full bg-[#23232d]" />
+                                    <span className="w-2 h-2 rounded-full bg-[#23232d]" />
+                                    <span className="w-2 h-2 rounded-full bg-[#23232d]" />
+                                    <span className="ml-3 text-[11px] font-mono text-[#5e5e6b]">
+                                        dapppay.sol — assistant
                                     </span>
                                 </div>
-                                <div className="p-6 sm:p-8 space-y-4 text-sm">
-                                    <div className="flex justify-end">
-                                        <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-[#14f195] text-[#0a0a12] font-medium">
-                                            Pay all workers in Acme this cycle
-                                        </div>
+                                <div className="p-7 space-y-5 text-[13px]">
+                                    <div>
+                                        <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#7c7ff5] mb-1">You</div>
+                                        <p className="text-white leading-[1.65]">Pay all workers in Acme this cycle.</p>
                                     </div>
-                                    <div className="flex justify-start">
-                                        <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-tl-sm bg-white/[0.04] border border-white/[0.06] text-white/80">
-                                            <div className="text-xs text-[#14f195] font-medium mb-1">
-                                                Payroll processed
-                                            </div>
+                                    <div>
+                                        <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8b8b96] mb-1">Assistant</div>
+                                        <p className="text-[#c7c7cf] leading-[1.65]">
                                             Distributed <span className="font-mono text-white">312.5 SOL</span> to{' '}
-                                            <span className="font-mono text-white">8 workers</span> in Acme. Signature ready
-                                            for review.
-                                        </div>
+                                            <span className="font-mono text-white">8 workers</span> in Acme. Transaction confirmed in <span className="font-mono text-white">412ms</span>.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -136,38 +151,44 @@ const HomePage = () => {
                     </div>
 
                     {/* Features */}
-                    <div className="mt-24 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {features.map((f, i) => (
-                            <div
-                                key={f.title}
-                                className="surface-card surface-card-hover rounded-xl p-6 animate-fade-up"
-                                style={{ animationDelay: `${180 + i * 80}ms` }}
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-5">
-                                    <f.icon className="w-5 h-5 text-[#14f195]" strokeWidth={2} />
-                                </div>
-                                <h3 className="text-[15px] font-semibold text-white mb-2">
-                                    {f.title}
-                                </h3>
-                                <p className="text-sm text-white/60 leading-relaxed">{f.body}</p>
+                    <div className="mt-32">
+                        <div className="text-center mb-12">
+                            <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7c7ff5] mb-3">
+                                Why DappPay
                             </div>
-                        ))}
+                            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+                                Built for the way teams actually work.
+                            </h2>
+                        </div>
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#23232d] border border-[#23232d] rounded-xl overflow-hidden">
+                            {features.map((f) => (
+                                <div
+                                    key={f.title}
+                                    className="bg-[#08080b] p-7 hover:bg-[#0e0e13] transition-colors"
+                                >
+                                    <div className="w-8 h-8 rounded-md bg-[#131319] border border-[#23232d] flex items-center justify-center mb-5">
+                                        <f.icon className="w-3.5 h-3.5 text-[#7c7ff5]" strokeWidth={2} />
+                                    </div>
+                                    <h3 className="text-[14px] font-semibold text-white mb-2 tracking-tight">
+                                        {f.title}
+                                    </h3>
+                                    <p className="text-[13px] text-[#8b8b96] leading-[1.65]">{f.body}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Stats */}
-                    <div className="mt-20 grid grid-cols-3 max-w-3xl mx-auto rounded-xl surface-card overflow-hidden">
-                        {stats.map((s, i) => (
+                    <div className="mt-20 max-w-2xl mx-auto grid grid-cols-3 divide-x divide-[#23232d] border-y border-[#23232d]">
+                        {stats.map((s) => (
                             <div
                                 key={s.label}
-                                className={`p-6 text-center ${
-                                    i !== stats.length - 1 ? 'border-r border-white/[0.06]' : ''
-                                }`}
+                                className="text-center px-4 py-6"
                             >
-                                <s.icon className="w-4 h-4 text-white/40 mx-auto mb-2" />
-                                <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                                <div className="text-3xl font-semibold tracking-tight text-white tabular-nums">
                                     {s.value}
                                 </div>
-                                <div className="mt-1 text-xs text-white/50">{s.label}</div>
+                                <div className="mt-1 text-[11px] text-[#8b8b96] uppercase tracking-[0.08em] font-medium">{s.label}</div>
                             </div>
                         ))}
                     </div>

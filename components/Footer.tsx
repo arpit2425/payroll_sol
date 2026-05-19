@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Linkedin, Youtube, Twitter, Zap } from 'lucide-react';
+import { Linkedin, Youtube, Twitter } from 'lucide-react';
 
 const footerLinks = [
     {
@@ -13,7 +13,6 @@ const footerLinks = [
     {
         title: 'Company',
         links: [
-            { label: 'About', href: '/about' },
             { label: 'Contact', href: 'mailto:hello@dapppay.com' },
             { label: 'Privacy', href: '/privacy' },
         ],
@@ -28,21 +27,21 @@ const socials = [
 
 const Footer = () => {
     return (
-        <footer className="relative z-10 mt-auto border-t border-white/[0.06] bg-[#070711]/60 backdrop-blur-xl">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <footer className="relative z-10 mt-auto border-t border-[#23232d] bg-[#08080b]">
+            <div className="max-w-7xl mx-auto px-5 lg:px-8 py-14">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     {/* Brand */}
                     <div className="col-span-2">
-                        <div className="flex items-center gap-2.5 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-[#14f195] flex items-center justify-center">
-                                <Zap className="w-4 h-4 text-[#0a0a12]" strokeWidth={2.5} />
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="w-5 h-5 rounded-[5px] bg-gradient-to-br from-[#7375f5] to-[#5b5ee8] flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)]">
+                                <span className="text-[10px] font-bold text-white leading-none">D</span>
                             </div>
-                            <span className="text-[15px] font-semibold text-white">DappPay</span>
+                            <span className="text-[13px] font-semibold tracking-tight text-white">DappPay</span>
                         </div>
-                        <p className="text-sm text-white/50 leading-relaxed max-w-sm">
+                        <p className="text-[13px] text-[#8b8b96] leading-[1.65] max-w-sm">
                             Conversational payroll infrastructure for teams building on Solana.
                         </p>
-                        <div className="mt-5 flex gap-2">
+                        <div className="mt-5 flex gap-1">
                             {socials.map(({ Icon, href, label }) => (
                                 <a
                                     key={label}
@@ -50,9 +49,9 @@ const Footer = () => {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={label}
-                                    className="w-9 h-9 rounded-md bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/60 hover:text-white hover:border-white/[0.14] hover:bg-white/[0.06] transition-colors"
+                                    className="w-7 h-7 rounded-md flex items-center justify-center text-[#8b8b96] hover:text-white hover:bg-[#131319] transition-colors"
                                 >
-                                    <Icon className="w-4 h-4" />
+                                    <Icon className="w-3.5 h-3.5" />
                                 </a>
                             ))}
                         </div>
@@ -61,7 +60,7 @@ const Footer = () => {
                     {/* Link columns */}
                     {footerLinks.map((section) => (
                         <div key={section.title}>
-                            <h4 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-4">
+                            <h4 className="text-[10px] font-semibold text-[#c7c7cf] uppercase tracking-[0.08em] mb-4">
                                 {section.title}
                             </h4>
                             <ul className="space-y-2.5">
@@ -69,7 +68,7 @@ const Footer = () => {
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="text-sm text-white/55 hover:text-white transition-colors"
+                                            className="text-[13px] text-[#8b8b96] hover:text-white transition-colors"
                                         >
                                             {link.label}
                                         </Link>
@@ -80,9 +79,16 @@ const Footer = () => {
                     ))}
                 </div>
 
-                <div className="mt-12 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40">
-                    <span>© {new Date().getFullYear()} DappPay. Built by DappMentors.</span>
-                    <span className="font-mono">v0.1 · Devnet</span>
+                <div className="mt-12 pt-5 border-t border-[#23232d] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#5e5e6b]">
+                    <span>© {new Date().getFullYear()} DappPay</span>
+                    <div className="flex items-center gap-2 font-mono">
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-1 h-1 rounded-full bg-[#6366f1]" />
+                            Devnet
+                        </span>
+                        <span>·</span>
+                        <span>v0.1</span>
+                    </div>
                 </div>
             </div>
         </footer>

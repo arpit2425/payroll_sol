@@ -653,7 +653,7 @@ const Dashboard = () => {
     };
 
     loadOrganizations();
-  }, [publicKey]);
+  }, [publicKey, messages]);
 
   const handleApiKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -932,7 +932,8 @@ const Dashboard = () => {
       <Header />
 
       {!publicKey && (
-        <div className="fixed top-20 right-4 z-40 px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-xs sm:text-sm text-white/80">
+        <div className="fixed top-20 right-4 z-40 flex items-center gap-2 px-3 py-2 rounded-md bg-[#131319] border border-[#23232d] text-[12px] text-[#c7c7cf] shadow-lg">
+          <span className="w-1 h-1 rounded-full bg-amber-400" />
           Connect your wallet to enable transactions.
         </div>
       )}
@@ -941,11 +942,14 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7c7ff5] mb-1.5">
+                Workspace
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.02em] text-white">
                 Dashboard
               </h1>
-              <p className="mt-1 text-sm text-white/50">
-                Manage your organizations and run payroll through the assistant.
+              <p className="mt-1.5 text-[13px] text-[#8b8b96]">
+                Manage organizations and run payroll through the assistant.
               </p>
             </div>
           </div>
@@ -983,7 +987,7 @@ const Dashboard = () => {
           {!isPayrollOpen && (
             <button
               onClick={handleTogglePanel}
-              className="fixed right-4 sm:right-6 bottom-6 sm:top-24 sm:bottom-auto z-40 h-11 px-4 inline-flex items-center gap-2 rounded-lg bg-white/[0.06] border border-white/[0.1] backdrop-blur-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/[0.1] transition-colors"
+              className="fixed right-4 sm:right-6 bottom-6 sm:top-24 sm:bottom-auto z-40 h-9 px-3 inline-flex items-center gap-1.5 rounded-md bg-[#131319] border border-[#23232d] text-[13px] font-medium text-[#c7c7cf] hover:text-white hover:border-[#2e2e3a] transition-colors"
               aria-label="Open organizations panel"
             >
               <Menu className="w-4 h-4" />

@@ -481,8 +481,8 @@ const Page: React.FC = () => {
     if (!isMounted) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="flex items-center gap-3 text-white/60 text-sm">
-                    <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-[#14f195] animate-spin" />
+                <div className="flex items-center gap-3 text-[#8b8b96] text-[13px]">
+                    <span className="w-3.5 h-3.5 rounded-full border-2 border-[#23232d] border-t-[#7c7ff5] animate-spin" />
                     Loading playground…
                 </div>
             </div>
@@ -497,20 +497,19 @@ const Page: React.FC = () => {
         label: string;
     }) => {
         const variants = {
-            write: 'bg-linear-to-r from-[#14f195] to-[#14f195] hover:from-[#14f195] hover:to-[#14f195] text-black',
-            read: 'bg-linear-to-r from-[#14f195] to-[#14f195] hover:from-[#14f195] hover:to-[#14f195] text-black',
-            secondary: 'bg-slate-700/50 hover:bg-slate-700 text-white border border-slate-600'
+            write: 'text-white border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.16)] bg-gradient-to-b from-[#7375f5] to-[#5b5ee8] hover:brightness-110',
+            read: 'bg-[#1a1a22] hover:bg-[#1f1f29] text-[#c7c7cf] border border-[#23232d] hover:border-[#2e2e3a]',
+            secondary: 'bg-[#1a1a22] hover:bg-[#1f1f29] text-[#c7c7cf] border border-[#23232d]',
         };
 
         return (
             <button
                 onClick={onClick}
                 disabled={disabled || isLoading}
-                className={`relative w-full py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 overflow-hidden group ${variants[variant]}`}
+                className={`w-full h-9 px-3 rounded-md font-medium text-[12px] transition-all disabled:opacity-40 flex items-center justify-center gap-1.5 ${variants[variant]}`}
             >
-                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-                <Play className="w-4 h-4 relative z-10 group-hover:scale-110 transition-transform" />
-                <span className="relative z-10">{isLoading ? 'Processing...' : label}</span>
+                <Play className="w-3 h-3" strokeWidth={2.25} />
+                <span>{isLoading ? 'Processing…' : label}</span>
             </button>
         );
     };
@@ -519,170 +518,157 @@ const Page: React.FC = () => {
         <div className="relative min-h-screen flex flex-col pt-20">
             <Header />
 
-            <div className="max-w-7xl mx-auto pb-20 px-6 pt-32">
+            <div className="max-w-6xl mx-auto pb-20 px-5 lg:px-8 pt-28">
                 {/* Header */}
-                <div className="relative z-10 bg-linear-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-[#14f195]/20 hover:border-[#14f195]/40 transition-all duration-300 shadow-2xl">
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div>
-                            <h1 className="text-4xl font-bold bg-linear-to-r from-[#14f195] to-[#14f195] bg-clip-text text-transparent mb-2">
-                                Payroll Test Suite
-                            </h1>
-                            <p className="text-slate-400">
-                                Interactive blockchain function testing environment
-                            </p>
-                        </div>
+                <div className="mb-10">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7c7ff5] mb-1.5">
+                        Developer tools
                     </div>
+                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.02em] text-white mb-1.5">
+                        Playground
+                    </h1>
+                    <p className="text-[13px] text-[#8b8b96]">
+                        Interactive blockchain function testing environment.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-5">
                         {/* Test Data Panel */}
-                        <div className="bg-linear-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl p-6 border border-[#14f195]/20 hover:border-[#14f195]/40 transition-all duration-300 shadow-xl group">
-                            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-[#14f195]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="bg-[#131319] border border-[#23232d] rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between px-5 py-3 border-b border-[#23232d] bg-[#0e0e13]">
+                                <h2 className="text-[13px] font-semibold text-white tracking-tight flex items-center gap-2">
+                                    <Zap className="w-3.5 h-3.5 text-[#7c7ff5]" strokeWidth={2} />
+                                    Test configuration
+                                </h2>
+                                <button
+                                    onClick={generateRandomData}
+                                    className="p-1.5 rounded-md transition-colors text-[#8b8b96] hover:text-white hover:bg-[#1a1a22]"
+                                    title="Randomize"
+                                >
+                                    <Shuffle className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
 
-                            <div className="relative z-10">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                                        <Zap className="w-6 h-6 text-[#14f195]" />
-                                        Test Configuration
-                                    </h2>
-                                    <button
-                                        onClick={generateRandomData}
-                                        className="p-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-all text-slate-300 hover:text-[#14f195]"
-                                    >
-                                        <Shuffle className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { label: 'Organization Name', key: 'orgName', type: 'text' },
-                                        { label: 'Worker Address (optional)', key: 'workerAddress', type: 'text', placeholder: 'Leave empty for random' },
-                                        { label: 'Salary (SOL)', key: 'salary', type: 'number', step: '0.1' },
-                                        { label: 'Fund Amount (SOL)', key: 'fundAmount', type: 'number', step: '0.1' },
-                                        { label: 'Withdraw Amount (SOL)', key: 'withdrawAmount', type: 'number', step: '0.1' },
-                                        { label: 'Organization PDA', key: 'selectedOrgPda', type: 'text', placeholder: 'Auto-filled', disabled: true },
-                                        { label: 'Worker PDA', key: 'selectedWorkerPda', type: 'text', placeholder: 'Auto-filled', disabled: true },
-                                    ].map((field) => (
-                                        <div key={field.key}>
-                                            <label className="block text-sm font-medium text-slate-300 mb-2">{field.label}</label>
-                                            <div className="relative group/input">
-                                                <input
-                                                    type={field.type || 'text'}
-                                                    step={field.step}
-                                                    disabled={field.disabled}
-                                                    value={testData[field.key as keyof TestData]}
-                                                    onChange={(e) => setTestData({ ...testData, [field.key]: e.target.value })}
-                                                    placeholder={field.placeholder}
-                                                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:border-[#14f195] focus:bg-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                                                />
-                                                {(field.key === 'selectedOrgPda' || field.key === 'selectedWorkerPda') && testData[field.key as keyof TestData] && (
-                                                    <button
-                                                        onClick={() => copyToClipboard(testData[field.key as keyof TestData], field.key)}
-                                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-slate-400 hover:text-[#14f195] transition-colors"
-                                                    >
-                                                        {copied === field.key ? (
-                                                            <Check className="w-4 h-4" />
-                                                        ) : (
-                                                            <Copy className="w-4 h-4" />
-                                                        )}
-                                                    </button>
-                                                )}
-                                            </div>
+                            <div className="grid grid-cols-2 gap-x-5 gap-y-3.5 p-5">
+                                {[
+                                    { label: 'Organization Name', key: 'orgName', type: 'text' },
+                                    { label: 'Worker Address (optional)', key: 'workerAddress', type: 'text', placeholder: 'Leave empty for random' },
+                                    { label: 'Salary (SOL)', key: 'salary', type: 'number', step: '0.1' },
+                                    { label: 'Fund Amount (SOL)', key: 'fundAmount', type: 'number', step: '0.1' },
+                                    { label: 'Withdraw Amount (SOL)', key: 'withdrawAmount', type: 'number', step: '0.1' },
+                                    { label: 'Organization PDA', key: 'selectedOrgPda', type: 'text', placeholder: 'Auto-filled', disabled: true },
+                                    { label: 'Worker PDA', key: 'selectedWorkerPda', type: 'text', placeholder: 'Auto-filled', disabled: true },
+                                ].map((field) => (
+                                    <div key={field.key}>
+                                        <label className="block text-[10px] font-semibold text-[#aeaeb8] mb-1.5 uppercase tracking-[0.06em]">{field.label}</label>
+                                        <div className="relative">
+                                            <input
+                                                type={field.type || 'text'}
+                                                step={field.step}
+                                                disabled={field.disabled}
+                                                value={testData[field.key as keyof TestData]}
+                                                onChange={(e) => setTestData({ ...testData, [field.key]: e.target.value })}
+                                                placeholder={field.placeholder}
+                                                className="ring-focus w-full bg-[#0e0e13] border border-[#23232d] rounded-md px-2.5 py-1.5 text-[12px] text-white placeholder-[#5e5e6b] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono"
+                                            />
+                                            {(field.key === 'selectedOrgPda' || field.key === 'selectedWorkerPda') && testData[field.key as keyof TestData] && (
+                                                <button
+                                                    onClick={() => copyToClipboard(testData[field.key as keyof TestData], field.key)}
+                                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[#8b8b96] hover:text-white transition-colors"
+                                                >
+                                                    {copied === field.key ? (
+                                                        <Check className="w-3.5 h-3.5 text-[#7c7ff5]" />
+                                                    ) : (
+                                                        <Copy className="w-3.5 h-3.5" />
+                                                    )}
+                                                </button>
+                                            )}
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
                         {/* Write Functions */}
-                        <div className="bg-linear-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl p-6 border border-[#14f195]/20 hover:border-[#14f195]/40 transition-all duration-300 shadow-xl group">
-                            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-[#14f195]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                            <div className="relative z-10">
-                                <h3 className="text-xl font-bold text-white mb-4">Write Operations (Requires Wallet)</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <TestButton onClick={testCreateOrganization} loading={loading === 'createOrg'} variant="write" label="1. Create Org" />
-                                    <TestButton onClick={testAddWorker} loading={loading === 'addWorker'} variant="write" label="2. Add Worker" />
-                                    <TestButton onClick={testFundTreasury} loading={loading === 'fundTreasury'} variant="write" label="3. Fund Treasury" />
-                                    <TestButton onClick={testProcessPayroll} loading={loading === 'processPayroll'} variant="write" label="4. Process Payroll" />
-                                    <TestButton onClick={testWithdraw} loading={loading === 'withdraw'} variant="write" label="5. Withdraw Funds" />
-                                </div>
+                        <div className="bg-[#131319] border border-[#23232d] rounded-lg overflow-hidden">
+                            <div className="px-5 py-3 border-b border-[#23232d] bg-[#0e0e13] flex items-center gap-2">
+                                <span className="w-1 h-1 rounded-full bg-[#6366f1]" />
+                                <h3 className="text-[10px] font-semibold text-[#aeaeb8] uppercase tracking-[0.08em]">Write · requires wallet</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 p-5">
+                                <TestButton onClick={testCreateOrganization} loading={loading === 'createOrg'} variant="write" label="Create Org" />
+                                <TestButton onClick={testAddWorker} loading={loading === 'addWorker'} variant="write" label="Add Worker" />
+                                <TestButton onClick={testFundTreasury} loading={loading === 'fundTreasury'} variant="write" label="Fund Treasury" />
+                                <TestButton onClick={testProcessPayroll} loading={loading === 'processPayroll'} variant="write" label="Process Payroll" />
+                                <TestButton onClick={testWithdraw} loading={loading === 'withdraw'} variant="write" label="Withdraw Funds" />
                             </div>
                         </div>
 
                         {/* Read Functions */}
-                        <div className="bg-linear-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl p-6 border border-[#14f195]/20 hover:border-[#14f195]/40 transition-all duration-300 shadow-xl group">
-                            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-[#14f195]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                            <div className="relative z-10">
-                                <h3 className="text-xl font-bold text-white mb-4">Read Operations (Read-Only)</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <TestButton onClick={testFetchUserOrgs} loading={loading === 'fetchUserOrgs'} variant="read" label="6. My Orgs" />
-                                    <TestButton onClick={testFetchAllOrgs} loading={loading === 'fetchAllOrgs'} variant="read" label="7. All Orgs" />
-                                    <TestButton onClick={testFetchOrgDetails} loading={loading === 'fetchOrgDetails'} variant="read" label="8. Org Details" />
-                                    <TestButton onClick={testFetchOrgWorkers} loading={loading === 'fetchOrgWorkers'} variant="read" label="9. Org Workers" />
-                                    <TestButton onClick={testFetchWorkerDetails} loading={loading === 'fetchWorkerDetails'} variant="read" label="10. Worker Details" />
-                                    <TestButton onClick={testFetchWorkersByWallet} loading={loading === 'fetchWorkersByWallet'} variant="read" label="11. My Workers" />
-                                    <TestButton onClick={testCheckPayrollDue} loading={loading === 'checkPayrollDue'} variant="read" label="12. Payroll Due?" />
-                                    <TestButton onClick={testGetOrgBalance} loading={loading === 'getOrgBalance'} variant="read" label="13. Org Balance" />
-                                    <TestButton onClick={testCalculatePayrollCost} loading={loading === 'calculatePayrollCost'} variant="read" label="14. Payroll Cost" />
-                                </div>
+                        <div className="bg-[#131319] border border-[#23232d] rounded-lg overflow-hidden">
+                            <div className="px-5 py-3 border-b border-[#23232d] bg-[#0e0e13] flex items-center gap-2">
+                                <span className="w-1 h-1 rounded-full bg-[#8b8b96]" />
+                                <h3 className="text-[10px] font-semibold text-[#aeaeb8] uppercase tracking-[0.08em]">Read · read-only</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 p-5">
+                                <TestButton onClick={testFetchUserOrgs} loading={loading === 'fetchUserOrgs'} variant="read" label="My Orgs" />
+                                <TestButton onClick={testFetchAllOrgs} loading={loading === 'fetchAllOrgs'} variant="read" label="All Orgs" />
+                                <TestButton onClick={testFetchOrgDetails} loading={loading === 'fetchOrgDetails'} variant="read" label="Org Details" />
+                                <TestButton onClick={testFetchOrgWorkers} loading={loading === 'fetchOrgWorkers'} variant="read" label="Org Workers" />
+                                <TestButton onClick={testFetchWorkerDetails} loading={loading === 'fetchWorkerDetails'} variant="read" label="Worker Details" />
+                                <TestButton onClick={testFetchWorkersByWallet} loading={loading === 'fetchWorkersByWallet'} variant="read" label="My Workers" />
+                                <TestButton onClick={testCheckPayrollDue} loading={loading === 'checkPayrollDue'} variant="read" label="Payroll Due?" />
+                                <TestButton onClick={testGetOrgBalance} loading={loading === 'getOrgBalance'} variant="read" label="Org Balance" />
+                                <TestButton onClick={testCalculatePayrollCost} loading={loading === 'calculatePayrollCost'} variant="read" label="Payroll Cost" />
                             </div>
                         </div>
                     </div>
 
                     {/* Logs Panel */}
                     <div className="lg:col-span-1">
-                        <div className="sticky top-24 bg-linear-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-[#14f195]/30 transition-all duration-300 shadow-xl group">
-                            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-slate-700/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="sticky top-24 bg-[#131319] border border-[#23232d] rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between px-5 py-3 border-b border-[#23232d] bg-[#0e0e13]">
+                                <h3 className="text-[10px] font-semibold text-[#aeaeb8] uppercase tracking-[0.08em]">Activity log</h3>
+                                <button
+                                    onClick={() => setLogs([])}
+                                    className="p-1 text-[#8b8b96] hover:text-white hover:bg-[#1a1a22] rounded-md transition-colors"
+                                    title="Clear logs"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
 
-                            <div className="relative z-10">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-bold text-white">Activity Log</h3>
-                                    <button
-                                        onClick={() => setLogs([])}
-                                        className="p-1.5 text-slate-400 hover:text-red-400 transition-colors hover:bg-red-400/10 rounded"
-                                        title="Clear logs"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-
-                                <div className="bg-black/30 rounded-lg p-4 h-[600px] overflow-y-auto font-mono text-xs border border-slate-800/50 custom-scrollbar">
-                                    {logs.length === 0 ? (
-                                        <div className="flex items-center justify-center h-full text-slate-500">
-                                            <p>No activity yet. Start testing...</p>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-1">
-                                            {logs.map((log) => (
-                                                <div
-                                                    key={log.id}
-                                                    className={`py-1 px-2 rounded transition-all ${log.type === 'success'
-                                                        ? 'bg-[#14f195]/10 text-[#14f195] border-l-2 border-[#14f195]'
-                                                        : log.type === 'error'
-                                                            ? 'bg-red-500/10 text-red-400 border-l-2 border-red-500'
-                                                            : 'bg-slate-700/20 text-slate-300 border-l-2 border-slate-600'
-                                                        }`}
-                                                >
-                                                    <div className="flex items-start justify-between gap-2">
-                                                        <span className="break-all flex-1">
-                                                            {log.type === 'success' && '✅ '}
-                                                            {log.type === 'error' && '❌ '}
-                                                            {log.type === 'info' && 'ℹ️ '}
-                                                            {log.message}
-                                                        </span>
-                                                        <span className="text-[10px] opacity-70 shrink-0 ml-2">
-                                                            {log.timestamp.toLocaleTimeString()}
-                                                        </span>
-                                                    </div>
+                            <div className="bg-[#0e0e13] p-3 h-[600px] overflow-y-auto font-mono text-[11px] scrollbar-thin">
+                                {logs.length === 0 ? (
+                                    <div className="flex items-center justify-center h-full text-[#5e5e6b]">
+                                        <p>No activity yet. Start testing…</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-1">
+                                        {logs.map((log) => (
+                                            <div
+                                                key={log.id}
+                                                className={`py-1 pl-2.5 pr-2 rounded ${log.type === 'success'
+                                                    ? 'text-white border-l-2 border-[#6366f1]'
+                                                    : log.type === 'error'
+                                                        ? 'text-[#c7c7cf] border-l-2 border-amber-400/70'
+                                                        : 'text-[#8b8b96] border-l-2 border-[#23232d]'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <span className="break-all flex-1">
+                                                        {log.message}
+                                                    </span>
+                                                    <span className="text-[10px] text-[#5e5e6b] shrink-0 ml-2 tabular-nums">
+                                                        {log.timestamp.toLocaleTimeString()}
+                                                    </span>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -690,23 +676,6 @@ const Page: React.FC = () => {
             </div>
 
             <Footer />
-
-            <style jsx>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: rgba(15, 23, 42, 0.5);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: linear-gradient(180deg, #14f195, #14f195);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: linear-gradient(180deg, #14f195, #14f195);
-                }
-            `}</style>
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import { X, Building2, ArrowUpRight, Wallet, Users } from 'lucide-react';
+import { X, ChevronRight, Plus } from 'lucide-react';
 import { PayrollSummary } from '@/utils/interface';
 
 interface OrganizationsPanelProps {
@@ -26,36 +26,30 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({
         <>
             {/* Mobile overlay */}
             <div
-                className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+                className="lg:hidden fixed inset-0 z-40 bg-black/70"
                 onClick={onToggle}
             />
 
             <aside
                 className="fixed lg:static bottom-0 inset-x-0 lg:inset-auto z-40 lg:z-auto
                     lg:col-span-1 flex flex-col
-                    surface-card rounded-t-2xl lg:rounded-xl
+                    bg-[#131319] border border-[#23232d] rounded-t-xl lg:rounded-lg
                     max-h-[85vh] lg:max-h-none h-[85vh] lg:h-auto
                     overflow-hidden"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-white/[0.06]">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
-                            <Building2 className="w-4 h-4 text-white/70" />
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-semibold text-white leading-tight">
-                                Organizations
-                            </h3>
-                            <p className="text-[11px] text-white/50 mt-0.5">
-                                {organizations.length}{' '}
-                                {organizations.length === 1 ? 'organization' : 'organizations'}
-                            </p>
-                        </div>
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#23232d] bg-[#0e0e13]">
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-[13px] font-semibold text-white tracking-tight">
+                            Organizations
+                        </h3>
+                        <span className="text-[10px] px-1.5 py-px rounded bg-[#1a1a22] border border-[#23232d] text-[#8b8b96] tabular-nums font-mono">
+                            {organizations.length}
+                        </span>
                     </div>
                     <button
                         onClick={onToggle}
-                        className="p-1.5 rounded-md text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors lg:hidden"
+                        className="p-1 rounded text-[#8b8b96] hover:text-white hover:bg-[#1a1a22] transition-colors lg:hidden"
                         aria-label="Close"
                     >
                         <X className="w-4 h-4" />
@@ -63,63 +57,52 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({
                 </div>
 
                 {/* List */}
-                <div className="flex-1 overflow-y-auto scrollbar-thin px-4 sm:px-5 py-4 space-y-2.5">
+                <div className="flex-1 overflow-y-auto scrollbar-thin">
                     {organizations.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                            <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-3">
-                                <Building2 className="w-5 h-5 text-white/40" />
+                        <div className="flex flex-col items-center justify-center h-full text-center px-6 py-16">
+                            <div className="w-10 h-10 rounded-lg bg-[#1a1a22] border border-[#23232d] flex items-center justify-center mb-3">
+                                <Plus className="w-4 h-4 text-[#8b8b96]" strokeWidth={1.75} />
                             </div>
-                            <h4 className="text-sm font-medium text-white mb-1">
-                                No organizations yet
+                            <h4 className="text-[13px] font-semibold text-white mb-1">
+                                No organizations
                             </h4>
-                            <p className="text-xs text-white/50 max-w-[220px]">
-                                Ask the assistant to create your first organization to get started.
+                            <p className="text-[12px] text-[#8b8b96] max-w-[220px] leading-relaxed">
+                                Ask the assistant to create one to get started.
                             </p>
                         </div>
                     ) : (
-                        organizations.map((org) => {
-                            const selected = selectedOrg === org.id;
-                            return (
-                                <button
-                                    key={org.id}
-                                    onClick={() => onSelectOrg(org.id)}
-                                    className={`w-full text-left rounded-xl border transition-all duration-200 group ${
-                                        selected
-                                            ? 'bg-white/[0.06] border-white/[0.18]'
-                                            : 'bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.04]'
-                                    }`}
-                                >
-                                    <div className="px-4 py-3.5">
-                                        <div className="flex items-start justify-between gap-2 mb-3">
-                                            <h4 className="text-sm font-semibold text-white truncate">
+                        <div className="p-1.5">
+                            {organizations.map((org) => {
+                                const selected = selectedOrg === org.id;
+                                return (
+                                    <button
+                                        key={org.id}
+                                        onClick={() => onSelectOrg(org.id)}
+                                        className={`w-full text-left px-3 py-2.5 rounded-md transition-colors group relative ${
+                                            selected
+                                                ? 'bg-[#1f1f29]'
+                                                : 'hover:bg-[#1a1a22]'
+                                        }`}
+                                    >
+                                        {selected && (
+                                            <span className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-[#6366f1]" />
+                                        )}
+                                        <div className="flex items-center justify-between gap-2 mb-2">
+                                            <h4 className="text-[13px] font-semibold text-white truncate">
                                                 {org.orgName}
                                             </h4>
-                                            <span
-                                                className={`mt-1 shrink-0 w-1.5 h-1.5 rounded-full ${
-                                                    selected ? 'bg-[#14f195]' : 'bg-white/30'
-                                                }`}
-                                            />
+                                            <ChevronRight className={`w-3.5 h-3.5 transition-transform ${selected ? 'text-[#7c7ff5] translate-x-0.5' : 'text-[#3a3a48] group-hover:text-[#8b8b96]'}`} strokeWidth={2} />
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-2 mb-3">
-                                            <div className="rounded-lg bg-black/20 border border-white/[0.05] px-2.5 py-2">
-                                                <div className="flex items-center gap-1.5 text-[10px] text-white/50 uppercase tracking-wide mb-1">
-                                                    <Wallet className="w-3 h-3" />
-                                                    Treasury
-                                                </div>
-                                                <div className="text-sm font-semibold text-white tabular-nums">
-                                                    {formatLamports(org.treasury)}
-                                                </div>
-                                            </div>
-                                            <div className="rounded-lg bg-black/20 border border-white/[0.05] px-2.5 py-2">
-                                                <div className="flex items-center gap-1.5 text-[10px] text-white/50 uppercase tracking-wide mb-1">
-                                                    <Users className="w-3 h-3" />
-                                                    Workers
-                                                </div>
-                                                <div className="text-sm font-semibold text-white tabular-nums">
-                                                    {org.workers.length}
-                                                </div>
-                                            </div>
+                                        <div className="flex items-center gap-3 text-[11px] text-[#8b8b96] mb-2.5">
+                                            <span className="flex items-center gap-1 tabular-nums font-mono">
+                                                <span className="w-1 h-1 rounded-full bg-[#3a3a48]" />
+                                                {formatLamports(org.treasury)}
+                                            </span>
+                                            <span className="flex items-center gap-1 tabular-nums">
+                                                <span className="w-1 h-1 rounded-full bg-[#3a3a48]" />
+                                                {org.workers.length} {org.workers.length === 1 ? 'worker' : 'workers'}
+                                            </span>
                                         </div>
 
                                         <span
@@ -135,23 +118,25 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({
                                                     onViewDetails(org.orgName);
                                                 }
                                             }}
-                                            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#14f195] hover:text-white transition-colors cursor-pointer"
+                                            className="inline-flex items-center gap-1 text-[11px] font-medium text-[#8b8b96] hover:text-[#7c7ff5] transition-colors cursor-pointer"
                                         >
-                                            View details
-                                            <ArrowUpRight className="w-3.5 h-3.5" />
+                                            View details →
                                         </span>
-                                    </div>
-                                </button>
-                            );
-                        })
+                                    </button>
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                <div className="px-4 sm:px-5 py-3 border-t border-white/[0.06] bg-black/20 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[11px] text-white/50">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#14f195]" />
-                        Live on Solana Devnet
+                <div className="px-4 py-2.5 border-t border-[#23232d] bg-[#0e0e13]">
+                    <div className="flex items-center justify-between text-[10px] text-[#8b8b96]">
+                        <div className="flex items-center gap-1.5 uppercase tracking-[0.08em] font-semibold">
+                            <span className="w-1 h-1 rounded-full bg-[#6366f1] shadow-[0_0_6px_0_rgba(99,102,241,0.6)]" />
+                            Devnet
+                        </div>
+                        <span className="font-mono text-[#5e5e6b]">v0.1</span>
                     </div>
                 </div>
             </aside>

@@ -198,7 +198,7 @@ const Page: React.FC = () => {
 
                             # Configure your environment
                             NEXT_PUBLIC_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
-                            NEXT_PUBLIC_OPENAI_API_KEY=your_openai_key
+                            NEXT_GEMINI_API_KEY=your_gemini_key
                             NEXT_PUBLIC_PROGRAM_ID=your_program_id`}
                             />
                         </div>
@@ -209,20 +209,20 @@ const Page: React.FC = () => {
                 <Section id="quickstart" title="Quick Start Guide" icon={Zap}>
                     <div className="space-y-8">
 
-                        {/* 1. OpenAI API Key Warning - CRITICAL */}
-                        <div className="p-6 bg-linear-to-r from-orange-900/40 via-red-900/40 to-purple-900/40 border border-orange-500/50 rounded-2xl backdrop-blur-sm">
+                        {/* 1. Gemini API Key Warning - CRITICAL */}
+                        <div className="p-6 bg-[#131319] border border-[#23232d] rounded-lg">
                             <div className="flex gap-4">
-                                <AlertCircle className="w-8 h-8 text-orange-400 shrink-0" />
+                                <AlertCircle className="w-5 h-5 text-[#7c7ff5] shrink-0 mt-0.5" />
                                 <div>
-                                    <h3 className="text-xl font-bold text-orange-300 mb-3">Required: You Need an OpenAI API Key</h3>
-                                    <p className="text-slate-200 text-sm leading-relaxed">
-                                        The AI assistant is powered by <strong>your own OpenAI API key</strong> — this keeps your usage private, secure, and gives you full control over costs.<br /><br />
-                                        <strong>How to get one (30 seconds):</strong><br />
-                                        1. Go to → <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="text-[#14f195] underline hover:text-white">platform.openai.com/api-keys</a><br />
-                                        2. Click “Create new secret key”<br />
-                                        3. Copy the key (starts with sk-...)<br />
+                                    <h3 className="text-[15px] font-semibold text-white mb-3 tracking-tight">Required: You Need a Gemini API Key</h3>
+                                    <p className="text-[#c7c7cf] text-[13px] leading-[1.65]">
+                                        The AI assistant is powered by <strong className="text-white font-semibold">your own Gemini API key</strong> — this keeps your usage private, secure, and gives you full control over costs.<br /><br />
+                                        <strong className="text-white font-semibold">How to get one (30 seconds):</strong><br />
+                                        1. Go to → <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" className="text-[#7c7ff5] underline decoration-[#6366f1]/40 hover:decoration-[#6366f1]/80 underline-offset-2">aistudio.google.com/app/apikey</a><br />
+                                        2. Click &ldquo;Create API key&rdquo;<br />
+                                        3. Copy the key (starts with AIza...)<br />
                                         4. Paste it in the chat when prompted<br /><br />
-                                        Your key is stored <strong>only in your browser</strong> • Free tier gives thousands of commands
+                                        Your key is stored <strong className="text-white font-semibold">only in your browser</strong> • Generous free tier on Gemini models
                                     </p>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@ const Page: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-700">
-                                        <tr className="hover:bg-slate-800/50"><td className="px-6 py-4">Nothing happens when I type</td><td className="px-6 py-4">Did you set your OpenAI API key?</td></tr>
+                                        <tr className="hover:bg-slate-800/50"><td className="px-6 py-4">Nothing happens when I type</td><td className="px-6 py-4">Did you set your Gemini API key?</td></tr>
                                         <tr className="hover:bg-slate-800/50"><td className="px-6 py-4">“Invalid orgPda” error</td><td className="px-6 py-4">Use the exact org name from your list</td></tr>
                                         <tr className="hover:bg-slate-800/50"><td className="px-6 py-4">Insufficient funds</td><td className="px-6 py-4">Fund the treasury first!</td></tr>
                                         <tr className="hover:bg-slate-800/50"><td className="px-6 py-4">AI keeps asking for missing info</td><td className="px-6 py-4">Include org name + amount + wallet address</td></tr>
