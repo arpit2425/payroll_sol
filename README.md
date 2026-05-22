@@ -476,6 +476,12 @@ For larger changes, please open an issue first to discuss scope and approach.
 
 ---
 
+## Acknowledgments
+
+Huge thanks to [**daltonic** (Gospel Darlington)](https://github.com/Daltonic) — his web3 and Solana tutorials were a key reference while building PayrollInSol. If you're learning Solana / dapp development, his content is well worth checking out.
+
+---
+
 
 <div align="center">
 
