@@ -14,7 +14,7 @@ export default function PrivacyPage() {
             content: (
                 <div className="space-y-4 text-slate-300">
                     <p className="leading-relaxed">
-                        DappPay is built from the ground up with privacy as a non-negotiable feature — not an afterthought.
+                        PayrollInSol is built from the ground up with privacy as a non-negotiable feature — not an afterthought.
                     </p>
                     <p className="text-lg font-medium bg-linear-to-r from-[#14f195] to-[#14f195] bg-clip-text text-transparent">
                         We do not store your OpenAI API key. Ever.

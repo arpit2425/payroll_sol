@@ -60,7 +60,7 @@ It is designed as a learning-friendly reference for combining:
 
 ## Screenshots
 
-> Replace the placeholders below with real captures stored under `docs/screenshots/`.
+
 
 | Landing page                                              | Dashboard (chat + orgs)                                    |
 | --------------------------------------------------------- | ---------------------------------------------------------- |
@@ -70,15 +70,7 @@ It is designed as a learning-friendly reference for combining:
 | --------------------------------------------------------- | ---------------------------------------------------------- |
 | ![Chat payroll](docs/screenshots/chat-payroll.png)        | ![Org details](docs/screenshots/org-details.png)           |
 
-To add your own:
 
-```bash
-# Capture screenshots, then drop them in:
-docs/screenshots/landing.png
-docs/screenshots/dashboard.png
-docs/screenshots/chat-payroll.png
-docs/screenshots/org-details.png
-```
 
 ---
 

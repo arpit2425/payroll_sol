@@ -48,7 +48,7 @@ const Header = () => {
                         <span className="text-[10px] font-bold text-white leading-none">D</span>
                     </div>
                     <span className="text-[13px] font-semibold tracking-tight text-white">
-                        DappPay
+                        PayrollInSol
                     </span>
                 </Link>
 

@@ -4,7 +4,7 @@ import './globals.css'
 import ClientProviders from '@/components/ClientProviders'
 
 export const metadata: Metadata = {
-  title: 'DappPay',
+  title: 'PayrollInSol',
   description: 'AI-Powered Payroll on Solana',
 }
 

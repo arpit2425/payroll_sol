@@ -13,16 +13,14 @@ const footerLinks = [
     {
         title: 'Company',
         links: [
-            { label: 'Contact', href: 'mailto:hello@dapppay.com' },
+            { label: 'Contact', href: 'mailto:hello@PayrollInSol.com' },
             { label: 'Privacy', href: '/privacy' },
         ],
     },
 ];
 
 const socials = [
-    { Icon: Youtube, href: 'https://youtube.com/@dappmentors?sub_confirmation=1', label: 'YouTube' },
-    { Icon: Linkedin, href: 'https://linkedin.com/company/dappmentors', label: 'LinkedIn' },
-    { Icon: Twitter, href: 'https://twitter.com/iDaltonic', label: 'Twitter' },
+   
 ];
 
 const Footer = () => {
@@ -36,7 +34,7 @@ const Footer = () => {
                             <div className="w-5 h-5 rounded-[5px] bg-gradient-to-br from-[#7375f5] to-[#5b5ee8] flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)]">
                                 <span className="text-[10px] font-bold text-white leading-none">D</span>
                             </div>
-                            <span className="text-[13px] font-semibold tracking-tight text-white">DappPay</span>
+                            <span className="text-[13px] font-semibold tracking-tight text-white">PayrollInSol</span>
                         </div>
                         <p className="text-[13px] text-[#8b8b96] leading-[1.65] max-w-sm">
                             Conversational payroll infrastructure for teams building on Solana.
@@ -80,7 +78,7 @@ const Footer = () => {
                 </div>
 
                 <div className="mt-12 pt-5 border-t border-[#23232d] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#5e5e6b]">
-                    <span>© {new Date().getFullYear()} DappPay</span>
+                    <span>© {new Date().getFullYear()} PayrollInSol</span>
                     <div className="flex items-center gap-2 font-mono">
                         <span className="flex items-center gap-1.5">
                             <span className="w-1 h-1 rounded-full bg-[#6366f1]" />

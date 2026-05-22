@@ -130,7 +130,7 @@ const HomePage = () => {
                                     <span className="w-2 h-2 rounded-full bg-[#23232d]" />
                                     <span className="w-2 h-2 rounded-full bg-[#23232d]" />
                                     <span className="ml-3 text-[11px] font-mono text-[#5e5e6b]">
-                                        dapppay.sol — assistant
+                                        PayrollInSol.sol — assistant
                                     </span>
                                 </div>
                                 <div className="p-7 space-y-5 text-[13px]">
@@ -154,7 +154,7 @@ const HomePage = () => {
                     <div className="mt-32">
                         <div className="text-center mb-12">
                             <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7c7ff5] mb-3">
-                                Why DappPay
+                                Why PayrollInSol?
                             </div>
                             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
                                 Built for the way teams actually work.

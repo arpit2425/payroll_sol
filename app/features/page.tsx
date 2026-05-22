@@ -100,7 +100,7 @@ export default function FeaturesPage() {
                             <span className="gradient-text">modern payroll.</span>
                         </h1>
                         <p className="mt-5 text-base sm:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto">
-                            DappPay combines AI intelligence, Solana speed and self-custodial
+                            PayrollInSol combines AI intelligence, Solana speed and self-custodial
                             security to make decentralized payroll feel effortless.
                         </p>
                     </div>

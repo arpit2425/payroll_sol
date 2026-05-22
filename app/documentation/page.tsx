@@ -140,7 +140,7 @@ const Page: React.FC = () => {
                 <Section id="intro" title="Getting Started" icon={BookOpen}>
                     <div className="space-y-4 text-slate-300">
                         <p>
-                            <span className="text-[#14f195] font-bold">DappPay</span> is an innovative decentralized application (DApp) designed for seamless payroll management using blockchain technology powered by Solana&apos;s Rust programming language.
+                            <span className="text-[#14f195] font-bold">PayrollInSol</span> is an innovative decentralized application (DApp) designed for seamless payroll management using blockchain technology powered by Solana&apos;s Rust programming language.
                         </p>
                         <p>
                             This DApp enables organizations to automate their entire pay process—from adding workers in real-time with accurate salary details directly linked through unique identifiers, to creating new organizational entities effortlessly while ensuring compliance and security.
@@ -176,8 +176,8 @@ const Page: React.FC = () => {
                                 Installation Steps
                             </h3>
                             <CodeBlock code={`# Clone the repository
-                            git clone https://github.com/daltonic/dappPay.git
-                            cd dappPay
+                            git clone https://github.com/arpit2425/payroll_sol.git
+                            cd payroll_sol
 
                             # Install dependencies
                             npm install
@@ -405,7 +405,7 @@ const Page: React.FC = () => {
                         Project Structure
                     </h3>
                     <CodeBlock code={`
-                    dappPay/
+                    PayrollInSol/
                         ├── anchor/                    # Solana smart contracts
                         │   ├── programs/payroll_program/
                         │   │   └── src/
