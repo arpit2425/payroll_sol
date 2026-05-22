@@ -5,7 +5,7 @@
 ### Conversational, on-chain payroll for Solana.
 
 Create organizations, fund treasuries, and pay teams — by chatting.
-DappPay turns natural-language commands into real Solana transactions signed by your own wallet.
+PayrollInSol turns natural-language commands into real Solana transactions signed by your own wallet.
 
 [![Made with Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana&logoColor=white)](https://solana.com/)
@@ -23,7 +23,7 @@ DappPay turns natural-language commands into real Solana transactions signed by 
 
 - [Overview](#overview)
 - [Screenshots](#screenshots)
-- [Why DappPay](#why-dapppay)
+- [Why PayrollInSol](#why-PayrollInSol)
 - [Features](#features)
 - [How It Works](#how-it-works)
 - [Tech Stack](#tech-stack)
@@ -44,11 +44,11 @@ DappPay turns natural-language commands into real Solana transactions signed by 
 
 ## Overview
 
-**DappPay** is an open-source, AI-assisted payroll dapp built on **Solana**. Instead of dashboards full of forms, you simply talk to an assistant:
+**PayrollInSol** is an open-source, AI-assisted payroll dapp built on **Solana**. Instead of dashboards full of forms, you simply talk to an assistant:
 
 > "Create an organization called Acme, add worker `7yQv4p…` with a salary of 3.2 SOL, fund Acme with 50 SOL, and process payroll."
 
-The assistant maps each instruction to an on-chain action against an [Anchor](https://www.anchor-lang.com/) program. Every transaction is **signed by your own wallet** — DappPay holds no keys, runs no backend user database, and stores no API keys server-side.
+The assistant maps each instruction to an on-chain action against an [Anchor](https://www.anchor-lang.com/) program. Every transaction is **signed by your own wallet** — PayrollInSol holds no keys, runs no backend user database, and stores no API keys server-side.
 
 It is designed as a learning-friendly reference for combining:
 - Conversational LLM tool-calling (Gemini)
@@ -82,9 +82,9 @@ docs/screenshots/org-details.png
 
 ---
 
-## Why DappPay
+## Why PayrollInSol
 
-| Feature                          | Traditional Payroll | Typical Crypto Payroll | **DappPay**                             |
+| Feature                          | Traditional Payroll | Typical Crypto Payroll | **PayrollInSol**                             |
 | -------------------------------- | ------------------- | ---------------------- | --------------------------------------- |
 | Natural-language control         | No                  | No                     | Yes — chat to run payroll               |
 | AI key stored on a server        | Yes                 | Yes                    | No — key lives only in your browser     |
@@ -103,7 +103,7 @@ docs/screenshots/org-details.png
 - **PDAs for everything** — Each org and worker has a deterministic PDA, so accounts are predictable and discoverable.
 - **Batch payroll** — A single transaction iterates over the org's workers and pays them all.
 - **Treasury view** — Fund, withdraw, and inspect treasury balances in SOL.
-- **Bring-your-own AI key** — Paste a Gemini API key in the browser; nothing is sent to a DappPay server.
+- **Bring-your-own AI key** — Paste a Gemini API key in the browser; nothing is sent to a PayrollInSol server.
 - **No backend, no login, no KYC** — Connect a wallet and go.
 
 ---
@@ -151,7 +151,7 @@ docs/screenshots/org-details.png
 ## Project Structure
 
 ```
-dappPay/
+PayrollInSol/
 ├── anchor/                         # Solana program workspace
 │   ├── Anchor.toml                 # Cluster + program ID config
 │   ├── Cargo.toml
@@ -251,7 +251,7 @@ Create a `.env.local` file in the project root:
 NEXT_PUBLIC_CLUSTER=devnet
 ```
 
-That is the only required variable. The **Gemini API key is collected at runtime** through the chat panel and stored in browser memory — it is never read from `.env.local` and never sent to any DappPay-controlled server.
+That is the only required variable. The **Gemini API key is collected at runtime** through the chat panel and stored in browser memory — it is never read from `.env.local` and never sent to any PayrollInSol-controlled server.
 
 > If you choose `localhost`, run a local validator with `solana-test-validator` and deploy the program to it first.
 
@@ -434,9 +434,9 @@ After deploying, update the program ID in:
 
 ## Privacy & Security
 
-- **No backend.** There is no DappPay server collecting user data.
-- **AI key handling.** Your Gemini key is held only in browser state; it is sent directly from your browser to `generativelanguage.googleapis.com` and never to a DappPay-controlled host.
-- **Non-custodial.** Transactions are constructed in the browser and signed by your wallet. DappPay never sees or holds private keys.
+- **No backend.** There is no PayrollInSol server collecting user data.
+- **AI key handling.** Your Gemini key is held only in browser state; it is sent directly from your browser to `generativelanguage.googleapis.com` and never to a PayrollInSol-controlled host.
+- **Non-custodial.** Transactions are constructed in the browser and signed by your wallet. PayrollInSol never sees or holds private keys.
 - **On-chain transparency.** Solana is a public ledger — anyone can audit org and worker accounts owned by the program.
 - **Secrets in `.env`.** `.env*` files are gitignored. Never commit real API keys; if one leaks, rotate it immediately at the provider.
 - **Smart-contract risk.** This code is provided as-is. Review and test before using on mainnet with real value.
@@ -484,17 +484,10 @@ For larger changes, please open an issue first to discuss scope and approach.
 
 ---
 
-## License
-
-This project is released under the **MIT License**. See [LICENSE](./LICENSE) for details.
-
-Copyright © 2026 DappPay contributors.
-
----
 
 <div align="center">
 
-**DappPay — payroll should be as easy as chatting.**
+**PayrollInSol — payroll should be as easy as chatting.**
 Built with React, Next.js, Anchor, and a lot of Solana love.
 
 </div>
