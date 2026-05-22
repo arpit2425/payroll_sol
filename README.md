@@ -1,6 +1,6 @@
 <div align="center">
 
-# DappPay
+# Payroll In Sol
 
 ### Conversational, on-chain payroll for Solana.
 
