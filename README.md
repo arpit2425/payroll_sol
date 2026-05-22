@@ -482,6 +482,14 @@ Huge thanks to [**daltonic** (Gospel Darlington)](https://github.com/Daltonic) �
 
 ---
 
+## Disclaimer
+
+This project is built **purely for learning purposes**. I do not claim any ownership or copyright over the underlying ideas, patterns, or tutorial material that inspired it — credit goes to the original creators (see [Acknowledgments](#acknowledgments)).
+
+I'm always happy to contribute back, collaborate, or improve things — issues and PRs are very welcome.
+
+---
+
 
 <div align="center">
 
