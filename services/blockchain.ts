@@ -1,6 +1,6 @@
 import { AnchorProvider, BN, Program, Wallet } from "@coral-xyz/anchor";
-import type { PayrollProgram } from "@/anchor/target/types/payroll_program";
-import idlJson from "@/anchor/target/idl/payroll_program.json";
+import type { PayrollProgram } from "@/payroll_program";
+import idlJson from "@/payroll_program.json";
 import {
   Connection,
   PublicKey,
