@@ -19,9 +19,9 @@ const footerLinks = [
     },
 ];
 
-const socials = [
+// const socials = [
    
-];
+// ];
 
 const Footer = () => {
     return (
@@ -39,7 +39,7 @@ const Footer = () => {
                         <p className="text-[13px] text-[#8b8b96] leading-[1.65] max-w-sm">
                             Conversational payroll infrastructure for teams building on Solana.
                         </p>
-                        <div className="mt-5 flex gap-1">
+                        {/* <div className="mt-5 flex gap-1">
                             {socials.map(({ Icon, href, label }) => (
                                 <a
                                     key={label}
@@ -52,7 +52,7 @@ const Footer = () => {
                                     <Icon className="w-3.5 h-3.5" />
                                 </a>
                             ))}
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Link columns */}
